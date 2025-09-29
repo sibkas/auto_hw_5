@@ -46,4 +46,23 @@ jobs:
       - name: Stop app-replan-delivery
         run: kill $(jobs -p) || true
 
-      
+      # 7. Запускаем app-ibank и ждём готовности
+      - name: Start app-ibank
+        run: |
+          java -jar ./artifacts/app-ibank.jar -P:profile=test &
+          echo "Waiting for app-ibank to start..."
+          for i in {1..30}; do
+            if nc -z localhost 9999; then
+              echo "app-ibank is up"
+              break
+            fi
+            sleep 1
+          done
+
+      # 8. Прогоняем AuthTest
+      - name: Run AuthTest
+        run: ./gradlew test --tests "task2.AuthTest" -Dselenide.headless=true
+
+      # 9. Останавливаем app-ibank
+      - name: Stop app-ibank
+        run: kill $(jobs -p) || true
