@@ -16,7 +16,7 @@ public class CardOrderTest {
     @BeforeEach
     void setup() {
 
-        open("http://localhost:9998");
+        open("http://localhost:9999");
     }
 
     @Test
