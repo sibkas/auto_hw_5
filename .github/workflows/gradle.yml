@@ -28,8 +28,8 @@ jobs:
       # 4. Запускаем SUT в фоне
       - name: Start SUT
         run: |
-            java -jar ./artifacts/app-ibank.jar &
-            java -jar ./artifacts/app-replan-delivery.jar &
+            java -jar ./artifacts/app-replan-delivery.jar -Dserver.port=9998 &
+            java -jar ./artifacts/app-ibank.jar -P:profile=test &
             sleep 10
 
       # 5. Запускаем тесты через Gradle в headless режиме
