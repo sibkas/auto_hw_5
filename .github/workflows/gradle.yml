@@ -25,44 +25,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # 4. Запускаем app-replan-delivery и ждём готовности
-      - name: Start app-replan-delivery
-        run: |
-          java -jar ./artifacts/app-replan-delivery.jar &
-          echo "Waiting for app-replan-delivery to start..."
-          for i in {1..30}; do
-            if nc -z localhost 9999; then
-              echo "app-replan-delivery is up"
-              break
-            fi
-            sleep 1
-          done
+      # 4. Запускаем SUT в фоне
+      - name: Start SUT
+        run: java -jar ./artifacts/app-replan-delivery.jar &
 
-      # 5. Прогоняем CardOrderTest
-      - name: Run CardOrderTest
-        run: ./gradlew test --tests "task1.CardOrderTest" -Dselenide.headless=true
-
-      # 6. Останавливаем app-replan-delivery
-      - name: Stop app-replan-delivery
-        run: kill $(jobs -p) || true
-
-      # 7. Запускаем app-ibank и ждём готовности
-      - name: Start app-ibank
-        run: |
-          java -jar ./artifacts/app-ibank.jar -P:profile=test &
-          echo "Waiting for app-ibank to start..."
-          for i in {1..30}; do
-            if nc -z localhost 9999; then
-              echo "app-ibank is up"
-              break
-            fi
-            sleep 1
-          done
-
-      # 8. Прогоняем AuthTest
-      - name: Run AuthTest
-        run: ./gradlew test --tests "task2.AuthTest" -Dselenide.headless=true
-
-      # 9. Останавливаем app-ibank
-      - name: Stop app-ibank
-        run: kill $(jobs -p) || true
+      # 5. Запускаем тесты через Gradle в headless режиме
+      - name: Run tests
+        run: ./gradlew test --info -Dselenide.headless=true
