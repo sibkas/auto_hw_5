@@ -82,9 +82,6 @@ public class CardOrderTest {
                 .shouldHave(Condition.text(replannedText));
     }
 
-    @AfterEach
-    void tearDown() {
-        closeWebDriver();
-    }
+
 
 }
